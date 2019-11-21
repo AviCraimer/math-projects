@@ -1,143 +1,131 @@
-// const syms = {
-//     set: Symbol("A type's Set"), // May be a javascript set object or a function that will test any element for membership
-//     inst: Symbol("Instanciate a type"), // A type method that takes an argument and returns an representative of given type.
-//     singletonElement: Symbol("A singleton element")
-// }
-
-
-const intersection = (a,b) => {
-    return new Set([...a].filter(x => b.has(x)) );
-}
-
-
-
-const typeSyms = {
+const syms = {
     Type: Symbol("This is a type"),
+    variablesKey: Symbol("Key for type variables"),
+    SingletonValue: Symbol("This is a singleton Value type"),
     TypeInstance: Symbol("Is Type Instance"),
     String: Symbol("Is of String Type"),
     Pair: Symbol("Is of Pair Type")
 }
 
+const isObjectLike = x => ['object','function'].includes(typeof x)
 
 
+const markType = function (type = {})  {
+    //If not object or function it's invalid
+    if (!isObjectLike(type)) {return false;}
 
-const typeProto = {
-    // getTypeSym: function () {
-    //     return typeSyms[this.type]
-    // },
-    same: function (typeInstance) {
-        const commonTypes = intersection(this.types, typeInstance.types);
-        if (commonTypes.size === 0 ) {
+    //Mark with special symbol that indicates it is part of the type system.
+    type[syms.Type] = true;
+    return type;
+}
+
+const typeTemplate = function (...prototypes) {
+    const proto = {};
+
+    prototypes.forEach(p => Object.assign(proto, p));
+
+    const template = Object.create(proto);
+
+    Object.assign(template, {
+        name: "",
+        category: "", // value, atomic, or higher
+        [syms.variablesKey]: {},
+        [syms.Type]: true
+    });
+
+    return template;
+};
+
+
+const isType = function (type) {
+    if (!isObjectLike(type)) {return false;}
+
+    return  (type[syms.Type]) ? true : false
+}
+
+//This function should be memoized so it doesn't return multiple distinct singletons for the same value input.
+//Definition of "Same" here should be deep equality, but this is problematic for as number of values gets big
+//In practice, singleton values should be literals such as strings, numbers, or symbols.
+const SingletonValue = function (value, ...args) {
+    //If more than one value is passed as an argument, it cannot be a singleton, return false
+    if (args.length !== 0) {
+        return false;
+    }
+
+
+    //If the value is undefined, then the variable is considered free
+    //The value can later by specified. In this way, you can have an instance of a singletonValue with a free variable, that is it represents any single value.
+    //Once a SingletonValue has been specified, that instance cannot be unspecified. Another instance can be generated from the type constructor.
+
+    if (isType(value)) {
+        //Dive inside to see if there is just a single bound instance variable, if so return that value with singleton wrapper.
+
+        //Come back to this after I've written more types
+    }
+
+    const singleton = typeTemplate(singletonProto);
+
+    //Name can be changed by method in prototype
+    singleton.name = value.toString().slice(0,40);
+    singleton.category = "value";
+
+    //This should eventually be changed to a deep clone of the value so it can't be affected by stuff happening outside the type system.
+    singleton[syms.variablesKey]["value"] = value;
+
+    singleton[syms.SingletonValue] = true;
+    return singleton;
+}
+
+
+const singletonProto = {
+    getValue () {
+        ///Eventually return a deep copy
+        return this[syms.variablesKey]["value"]
+    },
+    specifyValue(value) {
+        if (this[syms.variablesKey]["value"] !== undefined) {
             return false;
         } else {
-            return commonTypes;
+            this[syms.variablesKey]["value"] = value;
+            return this;
         }
     }
 }
 
 
+const Atom = function (type) {
+    //An Atom is a type that either is a SingletonValue type, or a SingletonValue type that is wrapped in another type with a singleton type variable
 
-function Type (obj) {
-    if ( obj.types &&  obj.types.add) {
-        obj.types.add('Type');
-    } else {
-        obj.types = new Set(["Type"])
+    if ( !isType(type) ) {
+        return (SingletonValue(type));
     }
-    obj[typeSyms.Type] = true;
 
-    let typeFunc = function  (...args) {
-        return obj.constructor(...args);
-    };
-    typeFunc = typeFunc.bind(typeFunc);
-    typeFunc.same = typeProto.same.bind(typeFunc);
-
-    Object.assign(typeFunc, obj);
-
-   return Object.freeze(typeFunc);
-}
-
-const TypeInstance = function (obj) {
-    if ( obj.types &&  obj.types.add) {
-        obj.types.add('TypeInstance');
-    } else {
-        obj.types = new Set(["TypeInstance"])
+    if (type[syms.SingletonValue]) {
+        return type
     }
-    obj[typeSyms.TypeInstance] = true;
-   return Object.freeze(Object.assign(Object.create(typeProto), obj));
-}
 
-const typeConstructors = {
-    String: function (el) {
-        const val = el.toString();
-        const str = {
-            types: new Set([this.name]),
-            val,
-            toString: () => {
-                return val
-            }
-        }
-        return TypeInstance(str)
-    },
-    Pair: function (car, cdr) {
-        const pair = {
-            car,
-            cdr,
-            types: new Set([this.name])
-        };
+    //Dive inside the type and see if it contains just one variable that ranges over values or singletonValues.
+    const variables = type[syms.variablesKey];
+    const varNames = Object.keys(variables);
 
-
-        if (car.types && car.types.has("Type") && cdr.types && cdr.types.has("Type")  ) { //Both sides of pair are types
-            //Returns a new type
-
-
-            return Type(pair)
-        } else {
-            //Returns a Type instance
-            return TypeInstance(pair);
-        }
+    if (varNames > 1) {
+        return false;
     }
+
+    //The single variable does not have a type of SingletonValue, hence it is not an atom
+    if (!varNames[0].type === SingletonValue) {
+        return false
+    }
+    //Now we know that the input is a type that it has a single variable that ranges over singletonValues. We also know (from earlier) that this type is not itself a SingletonValue type.
+
+    //Next we unwrap the variable and re-wrap it as an instance of the Atom type.
+    const value = variables[varNames[0]];
+
+    const atomInst = typeTemplate();
+    atomInst.name = "Atom Instance";
+    atomInst.category = "atomic";
+
+    //The value will be either undefined, or the singletonType that was wrapped in the input type.
+    atomInst[syms.variablesKey]["value"] = value;
+
 }
-
-function bindFuncToSelf ([name, func]) {
-    func = func.bind(func);
-    Object.defineProperty(func, "name", { value:  name });
-    return func;
-}
-
-function bindFuncBag (functionBag) {
-    Object.entries(functionBag).map( bindFuncToSelf).forEach(fn => functionBag[fn.name] = fn );
-}
-
-function wrapFuncBag (functionBag) {
-    Object.entries(functionBag).map( bindFuncToSelf).forEach(fn => functionBag[fn.name] = fn );
-}
-
-function transformEntries (obj, ...callbacks) {
-    let nextCallback = callbacks[0];
-    return Object.entries(functionBag)
-        .map(([key, value]) => {
-            let transformedValue = value;
-            callbacks.forEach(callback => transformedValue = callback(transformedValue) )
-            return [key, transformedValue];
-        });
-}
-
-function fromEntries (entires) { //Creates a new object from entries.
-    let obj = {};
-    entries.forEach(([key, value]) => obj[key] = value )
-    return obj;
-}
-
-function getTransformedObject (obj, ...callbacks) { //Transformed values and returns a new object with same properties
-    return fromEntries(transformEntries(obj, ...callbacks));
-}
-
-function transformObject (obj, ...callbacks) { // Takes an object, transforms  values, then replaces then mutates the  properteis in the same object with the new values
-    let entries = transformEntries(obj, ...callbacks);
-    entries.forEach(([key, value]) => obj[key] = value )
-    return obj;
-}
-
-
-
-bindFuncBag(types, Type);
