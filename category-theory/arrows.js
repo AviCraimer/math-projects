@@ -1,9 +1,8 @@
-const assert =  require('assert');
-
+const {uuid32} = require('util');
 
 const getArrowCompositionSignature = function (arrowsArr) {
 
-    let sig = `{${arrowsArr[0].sourceId}}${arrowsArr[0].id}{${arrowsArr[0].targetId}}`;
+    let sig = `{${arrowsArr[0].source}}${arrowsArr[0].id}{${arrowsArr[0].target}}`;
 
     //Example
     //"{tic57mvhb573vut}70pjtqp8hd2hm75{tic57mvhb573vut}";
@@ -15,39 +14,54 @@ const getArrowCompositionSignature = function (arrowsArr) {
         const arrow = arrowsArr[i];
         const prevArrow = arrowsArr[i-1];
 
-        if (prevArrow.targetId === arrow.sourceId  ) {
-            sig += `${arrow.id}{${arrow.targetId}}`
+        if (prevArrow.target === arrow.source ) {
+            sig += `${arrow.id}{${arrow.target}}`
         } else {
-            //arrows are not composable
-            return false;
+
+            console.error(`Arrow ${prevArrow.id} has as target ${prevArrow.target}, while the next arrow ${arrow.id} has as source ${arrow.source}
+
+            ${prevArrow.target} != ${arrow.source}
+            `);
+            throw new Error('Arrows are not composable')
+
         }
     }
-
+    console.log("Signature for\n", arrowsArr, "\n", sig );
     return sig;
 }
 
 
+const humanReadableSig = function (machineSig) {
 
-const humanReadable = "{tic57mvhb573vut}--70pjtqp8hd2hm75-->{aic67mv3b5v3sin}--i3qon6a5lnpbbmg-->{tic57mvhb573vut}";
-
-const machineReadable = "{tic57mvhb573vut}70pjtqp8hd2hm75{tic57mvhb573vut}";
-
+}
 
 
+function tests () {
+    const testArrows1 = [
+        {id: 'a1', source: 'o1', target: 'o2'  },
+        {id:'a2', source: 'o2', target: 'o3'},
+        {id:'a3', source: 'o3', target: 'o4'}
+    ]
+
+    const testArrows2 = [ //Not composable
+        {id: 'a1', source: 'o1', target: 'o2'  },
+        {id:'a2', source: 'o10', target: 'o3'},
+        {id:'a3', source: 'o3', target: 'o4'}
+    ]
+
+    const test1 = getArrowCompositionSignature(testArrows1);
+    console.log('test 1 pass/fail', test1 === "{o1}a1{o2}a2{o3}a3{o4}");
+
+    getArrowCompositionSignature(testArrows2);
+    //Expect error
+}
+
+//run tests with test command.
+if (process && process.argv &&  process.argv.includes("test")) {
+    tests();
+}
 
 
-
-
-
-
-//Test
-const testArrows = [{id: 'a1'},{id:'a2'},{id:'a3'}]
-
-console.log("getArrowCompositionSignature: ",
-getArrowCompositionSignature(testArrows) === 'a1->a2->a3');
-
-//idea, to make it more similar to morphism composition notation.
-// 'a1*a2*a3=a4*a5'
 
 module.exports = {
     getArrowCompositionSignature
