@@ -1,12 +1,11 @@
+
 const syms = {
-    typeSystem: Symbol("This javascript object is part of the type system"),
-    terms: Symbol("Variable for a term, the term may be free or boud, type or value"),
-        // term Object
-        // {x : undefined } //Free term, scope determined by containing type
-        // {x : 'abc'  }   // bound term
-        // {x : SomeType} // bound term
+typeSystemSym:  Symbol("This javascript object is part of the type system"),
+freeValueSym: Symbol("This variable does not have a fixed value, but ranges across it's type domain"),
+complexValueSym: Symbol("This is a value instance for a complex value type")
 }
 
+
 module.exports = {
-    syms
+    ...syms
 }
