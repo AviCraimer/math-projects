@@ -48,7 +48,10 @@ exponentialTranspose1 g  = gHat where
 -- This is also reversable, and hence the transpose functions are isomorphisms between functions that go directly from products and functions that go through the exponential object.
 exponentialTranspose2 ::  (GHat a b c  -> G a b c  )
 exponentialTranspose2 gHat = eval . gHat
+--   This is a great example of where we can read our function implmentation straight from the category theory diagram. Since we know that the diagram commutes, we know that eval after gHat equals g.
 
 -- Now we can state the definition of the exponential object in category theory
--- An exponential object is an object b^a such that exponentialTranspose1 and exponentialTranspose2 are valid for every type c, and all functions of the form G and GHat  (as those function types are defined above).
+-- An exponential object is an object b^a such that exponentialTranspose1 and exponentialTranspose2 are valid for every type c, and for functions of the form G and GHat  (as those function types are defined above).
+-- It turns of that in Set, the exponential object so defined is isomorphic to the set of all functions from a to b
+-- In Hask,  exponential objects b^a are isomorphic to concrete function types a->b, e.g., Int->String is the exponential object String^Int
 
