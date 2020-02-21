@@ -4,12 +4,12 @@ module CatProgCourse.Lecture05.MakingFunctors  (
     ,initializeBTree
     ,bTreeInsert
     ,testTreeInt
-    -- ,testBTreeFmap
+    ,testBTreeFmap
     ,makeLeafyTree
     ,testLeafyTree1
     ,testLeafyTree2
-    -- ,leafyFmapTest2
-    -- ,leafyFmapTest1
+    ,leafyFmapTest2
+    ,leafyFmapTest1
     )  where
 
 -- Example given in the lecture.
@@ -81,17 +81,17 @@ testTreeInt = foldr bTreeInsert EmptyBTree nums
 -- This fmap will have two cases. The first case is when the second fmap parameter is EmptyTree, this is rather trival. The second more interesting case, is when the BTree parameter has some values in it.
 
 -- Here is the start of it.  See if you can finish it off.
--- instance Functor BTree where
-    -- fmap g EmptyBTree = ?
-    -- fmap g (BTreeNode value leftTree rightTree) = ?
+instance Functor BTree where
+    fmap g EmptyBTree = EmptyBTree
+    fmap g (BTreeNode value leftTree rightTree) = BTreeNode (g value) ( (fmap g) leftTree) ( (fmap g) rightTree)
 
 
 -- When you are ready you can test fmap. Comment in the line below and the module export line at the top of the file.
 
--- testBTreeFmap = fmap (+ 100) testTreeInt
+testBTreeFmap = fmap (+ 100) testTreeInt
 
 -- If you implmented fmap correctly, you should get:
--- BTreeNode 110 (BTreeNode 112 (BTreeNode 120 EmptyBTree EmptyBTree) EmptyBTree) (BTreeNode 106 EmptyBTree (BTreeNode 105 EmptyBTree (BTreeNode 104 EmptyBTree EmptyBTree)))
+-- BTreeNode 110 (BTreeNode 106 (BTreeNode 105 (BTreeNode 104 EmptyBTree EmptyBTree) EmptyBTree) EmptyBTree) (BTreeNode 112 EmptyBTree (BTreeNode 120 EmptyBTree EmptyBTree))
 
 
 -- Now, make your own custom data type and write an Functor instance declaration for it. Or if you want to try another semi-cooked example. See below:
@@ -103,8 +103,8 @@ data LeafyTree elements =  LeafyTree [LeafyTree elements] [elements] deriving (S
 -- Hint: At one point you will have to use the composition of fmap with itself (fmap.fmap). Check the type signature of this in the console to see what it does.
 -- Also, remember that List is already a Functor instance with its own fmap.
 
--- instance Functor LeafyTree where
-    -- fmap g
+instance Functor LeafyTree where
+    fmap g (LeafyTree treeList elementList) = LeafyTree  ( (fmap.fmap) g treeList)  (fmap g elementList)
 
 makeLeafyTree :: [LeafyTree el] ->  [el] -> LeafyTree el
 makeLeafyTree trees elements   = LeafyTree trees elements
@@ -116,5 +116,12 @@ testLeafyTree2 :: LeafyTree Int
 testLeafyTree2 = makeLeafyTree [makeLeafyTree [] [1,2,3], makeLeafyTree [] [4,5,6]  ] [7,8,9]
 
 -- Add these to the exports at top of the file to call them in the console.
--- leafyFmapTest1 = fmap (++ " YourNameHere") testLeafyTree1
--- leafyFmapTest2 = fmap (+ 10) testLeafyTree2
+leafyFmapTest1 = fmap (++ " Gala") testLeafyTree1
+leafyFmapTest2 = fmap (+ 10) testLeafyTree2
+
+-- newtype LeafyTree2 a = LeafyTree2 (LeafyTree a)
+
+-- instance Functor LeafyTree2 where
+--     fmap g (LeafyTree2  (LeafyTree treeList elementList)) = LeafyTree2 x where
+--       x = LeafyTree treeList ((fmap g) elementList)
+
