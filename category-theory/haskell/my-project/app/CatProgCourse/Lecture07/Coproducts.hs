@@ -2,8 +2,8 @@ module CatProgCourse.Lecture07.Coproducts  (myEither, coBimap, coprodTestFn1,
 coprodTestFn2, coBimapTest1, coBimapTest2 ) where
 
 myEither :: ( (a->x), (b->x) ) -> ((Either a b) -> x)
-myEither (f,g) (Left x) = f x
-myEither (f,g) (Right y) = g y
+myEither (f,g) (Left a) = f a
+myEither (f,g) (Right b) = g b
 
 coBimap :: ((c->c'),(d->d')) -> (Either c d) -> (Either c' d')
 coBimap (f,g) = myEither (f',g') where
