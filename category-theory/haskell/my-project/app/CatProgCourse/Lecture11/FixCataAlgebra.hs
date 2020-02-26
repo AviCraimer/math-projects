@@ -1,7 +1,7 @@
 module CatProgCourse.Lecture11.FixCataAlgebra  (cata, Fix, fix,  unFix, Algebra, ExprF, evalExprF, recursiveEval, testExp1, testExp1Result) where
 
 
-newtype Fix f = MkFix (f (Fix f))
+newtype Fix f = MkFix (f  (Fix f))  -- a = Fix f
 
 unFix :: Fix f -> f (Fix f)
 unFix (MkFix x) = x
@@ -14,14 +14,14 @@ type Algebra f a = f a -> a
 --           carrier   structure map
 
 
---  f(Fix f) ---fmap (cata alg) --> f a
---      |                           |
---      |                           |
---      | MkFix                     | alg
---      |                           |
---      |                           |
---      v                           v
---    Fix f   ---- cata alg ------> a
+--      f(Fix f) ---fmap (cata alg) --> f a
+--        ^ |                           |
+--        | |                           |
+--  unfix | | MkFix                     | alg
+--        | |                           |
+--        | |                           |
+--        | v                           v
+--        Fix f   ---- cata alg ------> a
 
 cata :: Functor f => (f b -> b) -> Fix f -> b
 cata alg = alg . fmap (cata alg) . unFix
@@ -33,7 +33,7 @@ data ExprF a =
   | Times a a
 
 instance Functor ExprF  where
-  fmap g (Const x) = Const (x) -- Error when I apply g to x here
+  fmap g (Const x) = Const ( x) -- Error when I apply g to x here
   fmap g (Plus l r) = Plus (g l) ( g r)
   fmap g (Times l r) = Times (g l) (g r)
 
@@ -44,7 +44,7 @@ evalExprF (Const x) = x
 evalExprF (Plus x y) = x + y
 evalExprF (Times x y ) = x * y
 
-type Ex = Fix ExprF
+type Ex = Fix ExprF --  iso to (f (Fix f))  => ExprF (Fix Expr F)
 
 -- Smart constructor functions.
 num :: Double -> Ex
