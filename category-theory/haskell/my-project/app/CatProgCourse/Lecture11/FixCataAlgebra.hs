@@ -26,6 +26,11 @@ type Algebra f a = f a -> a
 cata :: Functor f => (f b -> b) -> Fix f -> b
 cata alg = alg . fmap (cata alg) . unFix
 
+-- One step at a time
+-- 1. unFix - unraps the outer layer from MkFix
+-- 2. fmap(cata alg) -  this recursively calls cata alg for every value inside the functor (using the functor's fmap definition). However,the "leaf" values do not have the functor type variable and therefore, the fmap cannot apply the functon to them. This is what stops the recursion. In other words you can define all the base cases for the recursion simply by defining values that don't use the functor's free type variable.
+-- 3. alg - This applies the algebra to the now completely unwrapped functor value. This would be a tree of depth one. It completes the recursion with the final step that resolves the evaluation.
+
 
 data ExprF a =
   Const Double
@@ -60,4 +65,8 @@ recursiveEval :: Ex -> Double
 recursiveEval = cata evalExprF
 
 testExp1 =  num 2 `mult`  add (num 4) (num 6) --  2 * (4 + 6)
+
+-- Expanded this looks like:
+-- MkFix ( Times (MkFix Const 2) (MkFix Plus (MkFix Const 4) (MkFix Const 6 )  )   )
+
 testExp1Result = recursiveEval testExp1 -- 20.0
