@@ -32,13 +32,13 @@ cata alg = alg . fmap (cata alg) . unFix
 -- 3. alg - This applies the algebra to the now completely unwrapped functor value. This would be a tree of depth one. It completes the recursion with the final step that resolves the evaluation.
 
 
-data ExprF a =
+data ExprF  a =
   Const Double
   | Plus a a
   | Times a a
 
 instance Functor ExprF  where
-  fmap g (Const x) = Const ( x) -- Error when I apply g to x here
+  fmap g (Const x) = Const  x -- Error when I apply g to x here
   fmap g (Plus l r) = Plus (g l) ( g r)
   fmap g (Times l r) = Times (g l) (g r)
 
