@@ -37,7 +37,7 @@ module Ideation.Sketches.Sketch01 ()  where
         m1 == m2 = show m1 == show m2
 
 
-    type Path = [Morphism] -- List of morphisms that are compatible to matchup tip to tail. In order from left to right.  [a-->b, b-->c]
+    type Path = Either Morphism [Morphism] -- List of morphisms that are compatible to matchup tip to tail. In order from left to right.  [a-->b, b-->c]
 
     type PathEquivalence =  Data.Set.Set Path   --A set of paths that are equivalent. They must match in their start and end points.
 
