@@ -7,6 +7,7 @@ module Main where
 -- import CatProgCourse.Lecture06.Products
 -- import CatProgCourse.Lecture07.Coproducts
 -- import CatProgCourse.Lecture07.ExponentialObjs
+-- import CatProgCourse.Lecture07.Pullbacks
 -- import CatProgCourse.Lecture09.RecursiveDataTypes
 import CatProgCourse.Lecture11.FixCataAlgebra
 import Lib
