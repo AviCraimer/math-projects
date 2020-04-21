@@ -1,5 +1,6 @@
 module CatProgCourse.Lecture09.RecursiveDataTypes  ( testEx, evaluator) where
 import Data.Void as Void
+
 data Ex =
   Const Double
   | Var String
