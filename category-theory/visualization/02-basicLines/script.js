@@ -158,7 +158,9 @@ const drawNetwork  = (data) => {
 
             const signDx = DX >= 0 ? -1 : 1;
 
-            const dx = signDx * (circleRadius / Math.sqrt(1 + (slope**2)  ))
+            arrowheadOffset = circleRadius + 5;
+
+            const dx = signDx * (arrowheadOffset / Math.sqrt(1 + (slope**2)  )) //Formula derived algebraicly
             const dy = slope * dx;
 
             let rotationAngle = Math.atan(dx / dy) / Math.PI * 180
