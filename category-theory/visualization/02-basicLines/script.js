@@ -1,5 +1,3 @@
-//import randomNum, makeRandomDotData, drawDotsWithLocations
-
 const network = {
     "nodes": [
       {
@@ -179,5 +177,4 @@ const drawNetwork  = (data) => {
 
 }
 
-
-const {svg, linkLines, circles} = drawNetwork(network);
+drawNetwork(network);
