@@ -1,5 +1,9 @@
 module CatProgCourse.Lecture07.Coproducts  (myEither, coBimap, coprodTestFn1,
-coprodTestFn2, coBimapTest1, coBimapTest2 ) where
+coprodTestFn2, coBimapTest1, coBimapTest2, dist, undist ) where
+
+
+
+
 
 myEither :: ( (a->x), (b->x) ) -> ((Either a b) -> x)
 myEither (f,g) (Left a) = f a
@@ -24,3 +28,12 @@ coBimapTest1 =  h (Left 6)  where
 coBimapTest2 =  h (Right "Hi ")  where
     h = coBimap coprodTestFnPair
 
+
+dist :: (a ,  Either b c) -> Either (a,b) (a,c)
+dist (a , Left b )   = Left (a, b)
+dist (a , Right c )   = Right (a, c)
+
+
+undist :: Either (a,b) (a,c)  -> (a ,  Either b c)
+undist (Left (a, b)) =  (a , Left b )
+undist  (Right (a, c)) =  (a , Right c )
