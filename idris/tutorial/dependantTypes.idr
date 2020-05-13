@@ -138,8 +138,9 @@ setB = getSet ["a","c", "c"]
 setAB : FinSet  (String,String)  [("a","c"),("b","c")]
 setAB = getSet [("a","c"),("b","c")]
 
--- mapping : {a: Type} -> {b:Type} -> Ord (a,b) =>  (domain: FinSet a elements1) -> (codomain: FinSet b elements2) -> FinSet (a,b) pairs -> Bool
--- mapping (FSet els1 ) (FSet els2) (FSet elPairs) =  True -- (sort $ map fst elPairs) == (sort $ els1)
+mapping : Eq a => Eq b => Eq (a,b)  =>  {els1: List a} -> {els2: List b} -> {pairs: List (a, b)} -> Ord (a,b) =>  (domain: FinSet a els1) -> (codomain: FinSet b els2) -> (FinSet (a,b) pairs) ->  Bool
+mapping {els1} {els2} {pairs}  (FSet els1 ) (FSet els2) (FSet pairs) = isTotal where
+    isTotal = (map fst pairs) ==  els1
 
 
 
