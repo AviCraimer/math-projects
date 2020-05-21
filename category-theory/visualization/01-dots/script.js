@@ -47,7 +47,7 @@ const dotsForceSimulation = () => {
     d3.forceSimulation( dots )
         .velocityDecay(0.1)
         .force("fCenter", d3.forceCenter( 300, 300 ) )
-        .force("collide", d3.forceCollide(7) )
+        .force("collide", d3.forceCollide(20) )
         .force("many", d3.forceManyBody().strength(50) )
         .on( "tick", function() {
             updateCircles(circles)
