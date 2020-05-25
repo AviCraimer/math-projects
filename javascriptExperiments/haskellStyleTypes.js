@@ -54,4 +54,74 @@ const tPipe  =  (...fns) => {
 
 tPipe(addIsACatTyped, toWordsTyped )("dog")
 
-tPipe(toWordsTyped   ,addIsACatTyped)("dog")
+// tPipe(toWordsTyped   ,addIsACatTyped)("dog")
+
+
+const Z = (() => {
+    const Zero = Symbol("Zero")
+    return () => ({
+        value: Zero,
+        type: "Nat"
+    })
+
+})();
+
+const S = nat => ({
+    value: { S: nat.value }, //We don't want to duplicate the type property
+    type: "Nat"
+
+} )
+
+
+const numberToNat = num => {
+    let nat =  Z();
+
+    for (let i = 1; i <= num; i++) {
+        nat = S(nat)
+    }
+    return nat;
+}
+
+
+
+const natValueToNumber =  natValue => {
+    if (natValue  === Z().value) {
+        return 0;
+    }
+
+    return 1 + natValueToNumber(natValue.S)
+}
+
+const natToNumber = nat => natValueToNumber(nat.value);
+
+let nat3 = numberToNat(3);
+
+let number3 = natToNumber(nat3)
+
+//Note some testing shows that it can handle nats of about 42000.
+
+
+// const S = (() => {
+
+//     const Suc = Symbol("Successor of")
+//     return nat => {
+//         const sNat = {
+//             type: "nat"
+//         }
+//         sNat[Suc] = nat.value //We don't want to duplicate the type property
+//         // console.log(nat.value)
+//         return sNat;
+//     };
+
+// })();
+
+
+// const numberToNat = num => {
+//     let nat =  Z();
+
+//     for (let i = 1; i <= num; i++) {
+//         console.log(nat)
+//         nat = S(nat)
+//     }
+//     return nat;
+// }
