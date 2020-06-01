@@ -143,6 +143,9 @@ mapping {els1} {els2} {pairs}  (FSet els1 ) (FSet els2) (FSet pairs) = isTotal w
     isTotal = (map fst pairs) ==  els1
 
 
+getListProduct : List a -> List b  ->  List (a,b)
+getListProduct list1 list2 = [(x,y) | x <- list1, y <- list2   ]
+
 
 -- data Function : (domain: FinSet a elements1) -> (codomain: FinSet b elements2) -> (mapping: FinSet (a,b) elements3) -> Type where
 --     Fn :

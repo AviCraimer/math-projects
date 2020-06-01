@@ -24,6 +24,9 @@ dependencies:
 - containers
 - split
 
+extra-deps:
+- dynamic-0.1.0
+
 library:
   source-dirs: src
 
