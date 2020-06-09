@@ -51,18 +51,18 @@ instance Profunctor (->) where
   lmap f g = g . f
   rmap f g = f . g
 
-  testFn1  ::  Int -> [Int]
-  testFn1 = take 3 . repeat
+testFn1  ::  Int -> [Int]
+testFn1 = take 3 . repeat
 
-  testFn2 :: String -> [String]
-  testFn2 = take 7 . repeat
+testFn2 :: String -> [String]
+testFn2 = take 7 . repeat
 
-  testFn3 :: Pair Int String -> Pair [Int] [String]
-  testFn3 =  bimap testFn1 testFn2
+testFn3 :: Pair Int String -> Pair [Int] [String]
+testFn3 =  bimap testFn1 testFn2
 
-  -- used for testing dimap
-  testFn4 :: [Int] -> String
-  testFn4 = foldr ((++) . show) ""
+-- used for testing dimap
+testFn4 :: [Int] -> String
+testFn4 = foldr ((++) . show) ""
 
 
 testDimap :: Int -> [String]
