@@ -12,7 +12,8 @@ module Main where
 -- import CatProgCourse.Lecture11.FixCataAlgebra
 -- import BartoszCourse.Part1.Lecture05.SumTypes
 -- import Ideation.Sketches.ArrowStructure
-import BartoszCourse.Limits
+-- import BartoszCourse.Limits
+import BartoszCourse.Part1.Lecture07.BifunctorsProfunctors
 import Lib
 
 

@@ -1,4 +1,4 @@
-module BartoszCourse.Limits (getListProduct, testTriples)  where
+module BartoszCourse.Limits ( testTriples)  where
 import  Data.Dynamic
 -- newtype Dynamic a = Dyna a
 

@@ -26,6 +26,7 @@ dependencies:
 
 extra-deps:
 - dynamic-0.1.0
+- profunctors-5.5.2
 
 library:
   source-dirs: src
